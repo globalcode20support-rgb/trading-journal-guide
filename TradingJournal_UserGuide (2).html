@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Journal GlobalCode 2.0 — Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#030608; --s1:#080e16; --s2:#0d1520; --s3:#131e2d;
+  --b1:#1a2840; --b2:#223258;
+  --acc:#2563eb; --acc2:#60a5fa; --acc3:#93c5fd;
+  --grn:#22c55e; --red:#ef4444; --gld:#f59e0b; --pur:#a855f7;
+  --txt:#f1f5f9; --txt2:#94a3b8; --txt3:#64748b;
+  --font:'Outfit',sans-serif; --mono:'JetBrains Mono',monospace;
+  --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);overflow-x:hidden;line-height:1.6}
+
+/* ── CURSOR GLOW ── */
+.cursor-glow{position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,.07),transparent 70%);pointer-events:none;z-index:0;transition:transform .15s ease;transform:translate(-50%,-50%)}
+
+/* ── LANG SWITCHER ── */
+#lang-bar{position:fixed;top:0;left:0;right:0;z-index:1000;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(3,6,8,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(37,99,235,.15)}
+.lang-logo{font-size:14px;font-weight:800;color:var(--txt);letter-spacing:-.3px}
+.lang-logo span{color:var(--acc2)}
+.lang-btns{display:flex;gap:8px}
+.lang-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:1px solid var(--b1);background:var(--s2);color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font)}
+.lang-btn:hover{border-color:var(--acc);color:var(--acc2)}
+.lang-btn.active{background:rgba(37,99,235,.15);border-color:var(--acc);color:var(--acc2)}
+.lang-btn .flag{font-size:16px}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 60px;position:relative;overflow:hidden}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,.25),transparent 70%);top:-100px;left:50%;transform:translateX(-50%)}
+.orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.12),transparent 70%);bottom:0;right:-100px}
+.orb3{width:300px;height:300px;background:radial-gradient(circle,rgba(34,197,94,.1),transparent 70%);bottom:100px;left:-50px}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(37,99,235,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.04) 1px,transparent 1px);background-size:60px 60px;animation:grid-move 20s linear infinite}
+@keyframes grid-move{0%{background-position:0 0}100%{background-position:60px 60px}}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 18px;border-radius:30px;background:rgba(37,99,235,.1);border:1px solid rgba(96,165,250,.3);font-size:11px;font-weight:700;color:var(--acc2);letter-spacing:2px;text-transform:uppercase;margin-bottom:28px;animation:badge-in .8s ease forwards}
+@keyframes badge-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.hero h1{font-size:clamp(42px,9vw,90px);font-weight:900;line-height:1;letter-spacing:-3px;margin-bottom:8px;animation:h1-in 1s ease forwards;opacity:0}
+@keyframes h1-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero h1 .line1{display:block}
+.hero h1 .line2{display:block;background:linear-gradient(135deg,var(--acc2),var(--pur),var(--acc2));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:gradient-shift 4s ease infinite}
+@keyframes gradient-shift{0%,100%{background-position:0%}50%{background-position:100%}}
+.hero-sub{font-size:18px;color:var(--txt2);max-width:540px;margin-bottom:40px;animation:fade-up .8s .3s ease forwards;opacity:0;font-weight:400}
+@keyframes fade-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero-nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;animation:fade-up .8s .5s ease forwards;opacity:0}
+.hero-link{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;border:1px solid var(--b1);color:var(--txt2);background:rgba(13,21,32,.8)}
+.hero-link:hover{border-color:var(--acc);color:var(--acc2);background:rgba(37,99,235,.08)}
+.hero-link.primary{background:linear-gradient(135deg,var(--acc),#1d4ed8);color:#fff;border-color:transparent;box-shadow:0 0 30px rgba(37,99,235,.4)}
+.hero-link.primary:hover{box-shadow:0 0 50px rgba(37,99,235,.6);transform:translateY(-1px)}
+
+/* ── SCROLL INDICATOR ── */
+.scroll-hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:11px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;animation:bounce 2s ease infinite}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+.scroll-hint svg{animation:bounce 2s ease infinite}
+
+/* ── SECTION ── */
+.section{max-width:960px;margin:0 auto;padding:90px 24px;scroll-margin-top:56px}
+.sect-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--acc);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.sect-label::before{content:'';display:inline-block;width:24px;height:2px;background:var(--acc);border-radius:2px}
+.section h2{font-size:clamp(30px,5vw,54px);font-weight:900;line-height:1.05;letter-spacing:-1.5px;margin-bottom:14px}
+.section>p{font-size:16px;color:var(--txt2);max-width:600px;margin-bottom:52px}
+.glow-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(37,99,235,.4),rgba(168,85,247,.3),transparent);margin:0}
+
+/* ── CARDS ── */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:24px;position:relative;overflow:hidden;transition:all .3s;cursor:default}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(37,99,235,.05),transparent);opacity:0;transition:opacity .3s}
+.card:hover{border-color:var(--acc);transform:translateY(-3px);box-shadow:0 20px 40px rgba(0,0,0,.4),0 0 30px rgba(37,99,235,.08)}
+.card:hover::before{opacity:1}
+.card-accent{position:absolute;top:0;left:0;right:0;height:2px;background:var(--ca,var(--acc))}
+.card-icon{font-size:36px;margin-bottom:14px}
+.card h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.card p{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* ── STEPS ── */
+.step-flow{display:flex;flex-direction:column;gap:1px}
+.step{display:flex;gap:20px;padding:22px 0;border-bottom:1px solid rgba(26,40,64,.6)}
+.step:last-child{border-bottom:none}
+.step-n{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--pur));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;flex-shrink:0;box-shadow:0 0 20px rgba(37,99,235,.35)}
+.step-body h3{font-size:16px;font-weight:700;margin-bottom:5px}
+.step-body p{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* ── CALLOUT ── */
+.callout{border-radius:12px;padding:18px 20px;margin:20px 0;display:flex;gap:14px;align-items:flex-start}
+.callout.tip{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2)}
+.callout.warn{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2)}
+.callout.info{background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2)}
+.callout-icon{font-size:20px;flex-shrink:0}
+.callout-text{font-size:13.5px;line-height:1.6}
+.callout-text strong{display:block;font-size:14px;margin-bottom:3px}
+.callout.tip .callout-text strong{color:var(--grn)}
+.callout.warn .callout-text strong{color:var(--gld)}
+.callout.info .callout-text strong{color:var(--acc2)}
+
+/* ── FEATURE SPLIT ── */
+.feat-row{display:flex;gap:48px;align-items:center;margin:48px 0;flex-wrap:wrap}
+.feat-row.rev{flex-direction:row-reverse}
+.feat-txt{flex:1;min-width:260px}
+.feat-txt h3{font-size:24px;font-weight:800;margin-bottom:10px;letter-spacing:-.5px}
+.feat-txt p{font-size:14px;color:var(--txt2);line-height:1.75;margin-bottom:12px}
+.feat-vis{flex:1;min-width:260px}
+
+/* ── TAGS ── */
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px}
+.tag.blue{background:rgba(37,99,235,.12);border:1px solid rgba(96,165,250,.25);color:var(--acc2)}
+.tag.green{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--grn)}
+.tag.gold{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:var(--gld)}
+.tag.pur{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);color:var(--pur)}
+
+/* ── CALENDAR DEMO ── */
+.cal-demo{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;overflow:hidden}
+.cal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px;font-weight:700}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cd{font-size:9px;font-weight:700;color:var(--txt3);text-align:center;padding:3px}
+.day{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1px solid var(--b1);background:var(--s2);transition:all .2s}
+.day:hover{transform:scale(1.08)}
+.day.p{background:rgba(22,63,25,.8);border-color:rgba(34,197,94,.4);color:var(--grn)}
+.day.l{background:rgba(60,12,12,.8);border-color:rgba(239,68,68,.4);color:var(--red)}
+.day.t{border-color:var(--acc);color:var(--acc2)}
+.day.e{background:transparent;border-color:transparent}
+.dpnl{font-size:7px;margin-top:1px;opacity:.8}
+
+/* ── KPI GRID ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:24px 0}
+.kpi{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:14px;transition:all .2s}
+.kpi:hover{border-color:var(--acc);transform:translateY(-2px)}
+.kpi-v{font-family:var(--mono);font-size:20px;font-weight:700}
+.kpi-l{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.pos{color:var(--grn)} .neg{color:var(--red)} .blu{color:var(--acc2)} .gld{color:var(--gld)} .pur{color:var(--pur)}
+
+/* ── FORMULA ── */
+.formula{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:20px 24px;font-family:var(--mono);font-size:13px;line-height:2;margin:20px 0;position:relative;overflow:hidden}
+.formula::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--acc),var(--pur))}
+.f-cmt{color:var(--txt3)} .f-var{color:var(--acc2)} .f-res{color:var(--grn);font-weight:700} .f-op{color:var(--txt2)}
+
+/* ── CALC DEMO ── */
+.calc-demo{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px;overflow:hidden}
+.calc-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(26,40,64,.5);font-size:13px}
+.calc-row:last-of-type{border-bottom:none}
+.calc-lbl{color:var(--txt2)}
+.calc-v{font-family:var(--mono);font-weight:700}
+.calc-result{margin-top:12px;background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(37,99,235,.06));border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:14px;text-align:center}
+.calc-big{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--grn)}
+.calc-sub{font-size:11px;color:var(--txt3);margin-top:3px}
+
+/* ── GAUGE SVG ── */
+.dd-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:22px;text-align:center}
+.dd-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.dd-stat{background:var(--s2);border-radius:10px;padding:10px}
+.dd-stat-v{font-family:var(--mono);font-size:15px;font-weight:700}
+.dd-stat-l{font-size:9px;color:var(--txt3);text-transform:uppercase;margin-top:2px}
+
+/* ── CONS DEMO ── */
+.cons-card{background:var(--s1);border:1px solid rgba(37,99,235,.3);border-radius:var(--r);padding:22px;position:relative;overflow:hidden}
+.cons-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--acc),var(--pur),transparent)}
+.cons-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.cons-cell{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:12px}
+.cons-lbl{font-size:8px;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.cons-val{font-family:var(--mono);font-size:20px;font-weight:700}
+.cons-bar-bg{height:10px;background:rgba(255,255,255,.05);border-radius:20px;overflow:visible;position:relative;margin:12px 0;border:1px solid var(--b1)}
+.cons-bar-fg{height:100%;border-radius:20px;background:linear-gradient(90deg,#1a4aff,var(--acc2),var(--gld));position:relative}
+.cons-bar-fg::after{content:'';position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 0 16px rgba(245,158,11,.9),0 0 6px #fff}
+.cons-status{text-align:center;padding:12px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.cons-status.no{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:var(--red)}
+.cons-status.ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:var(--grn)}
+
+/* ── LEGEND ── */
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;background:var(--s2);border:1px solid var(--b1);border-radius:7px;padding:5px 10px}
+.leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* ── ARROW FLOW ── */
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 0}
+.flow-box{background:var(--s2);border:1px solid var(--b1);border-radius:9px;padding:9px 14px;font-size:12px;font-weight:600;transition:all .2s}
+.flow-box:hover{border-color:var(--acc);color:var(--acc2)}
+.flow-box.hl{border-color:var(--acc);color:var(--acc2);background:rgba(37,99,235,.08)}
+.flow-arr{color:var(--acc2);font-size:18px;font-weight:700}
+
+/* ── PLANS ── */
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:28px 0}
+.plan{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:24px;text-align:center;transition:all .3s;position:relative;overflow:hidden}
+.plan:hover{transform:translateY(-4px);box-shadow:0 24px 48px rgba(0,0,0,.4)}
+.plan.best{border-color:var(--gld);background:rgba(13,22,8,.7)}
+.plan.best::before{content:'⭐ MEJOR PRECIO';position:absolute;top:12px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,var(--gld),#fcd34d);color:#000;font-size:9px;font-weight:800;padding:3px 12px;border-radius:20px;white-space:nowrap;letter-spacing:.5px}
+.plan-icon{font-size:28px;margin-bottom:10px;margin-top:16px}
+.plan-name{font-size:16px;font-weight:800;margin-bottom:6px}
+.plan-price{font-size:32px;font-weight:900;font-family:var(--mono);margin-bottom:4px}
+.plan-per{font-size:12px;color:var(--txt3);margin-bottom:14px}
+.plan-desc{font-size:12px;color:var(--txt2);line-height:1.5}
+
+/* ── RING SVG ── */
+.ring-wrap{display:flex;justify-content:center;margin:16px 0}
+@keyframes ring-appear{from{stroke-dashoffset:600}to{stroke-dashoffset:var(--target-offset)}}
+.ring-arc{animation:ring-appear 1.5s cubic-bezier(.4,0,.2,1) forwards}
+
+/* ── FLOATING PARTICLES ── */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;border-radius:50%;animation:float-p var(--d,10s) ease-in-out infinite;opacity:var(--op,.15)}
+@keyframes float-p{0%,100%{transform:translate(0,0)}25%{transform:translate(var(--x1),var(--y1))}50%{transform:translate(var(--x2),var(--y2))}75%{transform:translate(var(--x3),var(--y3))}}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(28px);transition:all .7s cubic-bezier(.4,0,.2,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-l{opacity:0;transform:translateX(-28px);transition:all .7s cubic-bezier(.4,0,.2,1)}
+.reveal-l.visible{opacity:1;transform:translateX(0)}
+.reveal-r{opacity:0;transform:translateX(28px);transition:all .7s cubic-bezier(.4,0,.2,1)}
+.reveal-r.visible{opacity:1;transform:translateX(0)}
+
+/* ── TOC ── */
+.toc{position:fixed;left:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:7px;z-index:100}
+.toc-d{width:6px;height:6px;border-radius:50%;background:var(--b2);transition:all .3s;cursor:pointer}
+.toc-d:hover{background:var(--acc2)}
+.toc-d.active{background:var(--acc2);box-shadow:0 0 8px var(--acc2);transform:scale(1.5)}
+
+/* ── FOOTER ── */
+footer{background:var(--s1);border-top:1px solid var(--b1);padding:48px 24px;text-align:center;color:var(--txt2);font-size:13px}
+
+@media(max-width:768px){
+  .toc,.cursor-glow{display:none}
+  .feat-row,.feat-row.rev{flex-direction:column}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- Cursor glow -->
+<div class="cursor-glow" id="cglow"></div>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- ── LANG BAR ─────────────────────────────────────── -->
+<div id="lang-bar">
+  <div class="lang-logo">Trading Journal <span>GlobalCode 2.0</span></div>
+  <div class="lang-btns">
+    <button class="lang-btn active" onclick="setLang('es')" id="btn-es"><span class="flag">🇪🇸</span> Español</button>
+    <button class="lang-btn" onclick="setLang('fr')" id="btn-fr"><span class="flag">🇫🇷</span> Français</button>
+    <button class="lang-btn" onclick="setLang('en')" id="btn-en"><span class="flag">🇬🇧</span> English</button>
+  </div>
+</div>
+
+<!-- ── TOC ── -->
+<nav class="toc" id="toc">
+  <div class="toc-d active"></div>
+  <div class="toc-d"></div>
+  <div class="toc-d"></div>
+  <div class="toc-d"></div>
+  <div class="toc-d"></div>
+  <div class="toc-d"></div>
+  <div class="toc-d"></div>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════════ -->
+<section id="s-hero" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 60px;position:relative;overflow:hidden;scroll-margin-top:56px">
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-orb orb3"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge" data-i18n="hero_badge">📖 GUÍA DE USUARIO</div>
+  <h1 style="font-size:clamp(42px,9vw,90px);font-weight:900;line-height:1;letter-spacing:-3px;margin-bottom:12px;animation:h1-in 1s ease forwards;opacity:0">
+    <span style="display:block">Trading Journal</span>
+    <span style="display:block;background:linear-gradient(135deg,var(--acc2),var(--pur),var(--acc2));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:gradient-shift 4s ease infinite">GlobalCode 2.0</span>
+  </h1>
+  <p style="font-size:18px;color:var(--txt2);max-width:540px;margin-bottom:40px;animation:fade-up .8s .3s ease forwards;opacity:0;font-weight:400" data-i18n="hero_sub">Tu diario profesional para Forex, Crypto y Prop Firm. Todo lo que necesitas para operar mejor.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;animation:fade-up .8s .5s ease forwards;opacity:0">
+    <a href="#s-start" class="hero-link" data-i18n="nav_start">🚀 Primeros pasos</a>
+    <a href="#s-cal" class="hero-link" data-i18n="nav_cal">📅 Calendario</a>
+    <a href="#s-calc" class="hero-link" data-i18n="nav_calc">🧮 Calculadora</a>
+    <a href="#s-dd" class="hero-link" data-i18n="nav_dd">📉 Drawdown</a>
+    <a href="#s-cons" class="hero-link" data-i18n="nav_cons">⚖️ Consistencia</a>
+    <a href="#s-backup" class="hero-link primary" data-i18n="nav_backup">📤 Backup & Export →</a>
+  </div>
+  <div class="scroll-hint" style="position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:10px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase">
+    <svg width="18" height="24" viewBox="0 0 18 24" fill="none"><rect x="1" y="1" width="16" height="22" rx="8" stroke="currentColor" stroke-opacity=".4"/><circle cx="9" cy="7" r="2.5" fill="currentColor" opacity=".6"><animate attributeName="cy" values="7;15;7" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".6;.2;.6" dur="2s" repeatCount="indefinite"/></circle></svg>
+    <span data-i18n="scroll_hint">scroll</span>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ══ PRIMEROS PASOS ══════════════════════════════ -->
+<section id="s-start" class="section">
+  <div class="sect-label" data-i18n="start_label">Primeros pasos</div>
+  <h2 data-i18n="start_h2">Listo en<br>3 pasos</h2>
+  <p data-i18n="start_p">Antes de registrar tu primer trade, configura tu cuenta y personaliza la app a tu gusto.</p>
+
+  <div class="step-flow reveal">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <h3 data-i18n="step1_h">Crea tu cuenta de trading</h3>
+        <p data-i18n="step1_p">Pulsa 📅 en la barra inferior → selector de calendario → <strong>+ Nueva cuenta</strong>. Ponle un nombre descriptivo (ej: "FTMO Challenge", "Cuenta Real").</p>
+        <div class="callout info" style="margin-top:12px">
+          <span class="callout-icon">💡</span>
+          <div class="callout-text"><strong data-i18n="tip_multi_title">Múltiples cuentas</strong><span data-i18n="tip_multi_p"> Puedes gestionar varios retos de prop firm simultáneamente, cada uno con su propio historial.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <h3 data-i18n="step2_h">Elige idioma y tema</h3>
+        <p data-i18n="step2_p">Ajustes ⚙️ → Idioma → Tema visual. 3 idiomas disponibles y 6 temas: Oscuro, Claro, Midnight, Forest, Amber, Charcoal.</p>
+        <div class="legend" style="margin-top:12px">
+          <div class="leg-item"><div class="leg-dot" style="background:#080c10;border:1px solid #333"></div><span data-i18n="theme_dark">Oscuro</span></div>
+          <div class="leg-item"><div class="leg-dot" style="background:#f0f2f5;border:1px solid #ccc"></div><span data-i18n="theme_light">Claro</span></div>
+          <div class="leg-item"><div class="leg-dot" style="background:#020409"></div>Midnight</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#070e08"></div>Forest</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#0e0900"></div>Amber</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#111"></div>Charcoal</div>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <h3 data-i18n="step3_h">Registra tu primer trade</h3>
+        <p data-i18n="step3_p">Pulsa cualquier día del calendario → formulario → rellena activo, dirección (BUY/SELL), resultado y P&L → <strong>Guardar</strong>. El día queda coloreado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ══ CALENDARIO ═════════════════════════════════ -->
+<section id="s-cal" class="section">
+  <div class="sect-label" data-i18n="cal_label">Función principal</div>
+  <h2 data-i18n="cal_h2">Calendario<br>de trades</h2>
+  <p data-i18n="cal_p">Visualiza todo tu mes de un vistazo. Cada día muestra el resultado con código de colores instantáneo.</p>
+
+  <div class="feat-row reveal">
+    <div class="feat-txt reveal-l">
+      <h3 data-i18n="cal_colors_h">Código de colores</h3>
+      <p data-i18n="cal_colors_p">El calendario usa colores para que identifiques de un vistazo cómo fue cada jornada de trading.</p>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#22c55e"></div><span data-i18n="col_win">Día ganador (TP)</span></div>
+        <div class="leg-item"><div class="leg-dot" style="background:#ef4444"></div><span data-i18n="col_loss">Día perdedor (SL)</span></div>
+        <div class="leg-item"><div class="leg-dot" style="background:#3b82f6"></div>Breakeven</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f59e0b"></div><span data-i18n="col_manual">Manual</span></div>
+        <div class="leg-item" style="border:2px solid #60a5fa"><div class="leg-dot" style="background:#030608"></div><span data-i18n="col_today">Hoy</span></div>
+      </div>
+      <div class="callout tip" style="margin-top:16px">
+        <span class="callout-icon">👆</span>
+        <div class="callout-text"><strong data-i18n="tip_swipe_h">Desliza para navegar</strong><span data-i18n="tip_swipe_p"> Desliza el dedo horizontalmente para cambiar de sección sin usar la barra inferior.</span></div>
+      </div>
+    </div>
+    <div class="feat-vis reveal-r">
+      <div class="cal-demo" style="animation:float 4s ease-in-out infinite">
+        <div class="cal-hdr"><span style="cursor:pointer;color:var(--txt2)">◀</span><span>Abril 2026</span><span style="cursor:pointer;color:var(--txt2)">▶</span></div>
+        <div class="cal-g">
+          <div class="cd">L</div><div class="cd">M</div><div class="cd">X</div><div class="cd">J</div><div class="cd">V</div><div class="cd" style="color:#ef4444">S</div><div class="cd" style="color:#ef4444">D</div>
+          <div class="day e"></div><div class="day e"></div><div class="day p">1<div class="dpnl">+800</div></div><div class="day l">2<div class="dpnl">-300</div></div><div class="day p">3<div class="dpnl">+1.2k</div></div><div class="day">4</div><div class="day">5</div>
+          <div class="day p">6<div class="dpnl">+500</div></div><div class="day l">7<div class="dpnl">-150</div></div><div class="day t">8<div class="dpnl" style="color:var(--acc2)">hoy</div></div><div class="day">9</div><div class="day p">10<div class="dpnl">+900</div></div><div class="day">11</div><div class="day">12</div>
+          <div class="day p">13<div class="dpnl">+600</div></div><div class="day p">14<div class="dpnl">+750</div></div><div class="day l">15<div class="dpnl">-200</div></div><div class="day p">16<div class="dpnl">+1.1k</div></div><div class="day p">17<div class="dpnl">+400</div></div><div class="day">18</div><div class="day">19</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reveal" style="margin-top:32px">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:14px" data-i18n="add_trade_h">Cómo añadir un trade</h3>
+    <div class="flow">
+      <div class="flow-box" data-i18n="flow_tap">👆 Pulsa un día</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box" data-i18n="flow_form">Formulario</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box" data-i18n="flow_fill">Rellena datos</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box hl" data-i18n="flow_save">✅ Guardar</div>
+    </div>
+    <div class="grid-2" style="margin-top:20px">
+      <div class="card"><div class="card-accent" style="--ca:var(--acc2)"></div><div class="card-icon">🎯</div><h3 data-i18n="field_asset">Activo</h3><p data-i18n="field_asset_p">EURUSD, XAUUSD, BTCUSD… Elige del catálogo o escribe el símbolo. Los favoritos aparecen primero.</p></div>
+      <div class="card"><div class="card-accent" style="--ca:var(--grn)"></div><div class="card-icon">📊</div><h3 data-i18n="field_result">Resultado</h3><p data-i18n="field_result_p">TP, SL, Manual, Breakeven, Parcial, TP1, TP2. Cada resultado tiene su color propio.</p></div>
+      <div class="card"><div class="card-accent" style="--ca:var(--gld)"></div><div class="card-icon">📸</div><h3 data-i18n="field_notes">Notas e imágenes</h3><p data-i18n="field_notes_p">Adjunta capturas del gráfico, análisis y tu estado emocional para revisar tus trades después.</p></div>
+      <div class="card"><div class="card-accent" style="--ca:var(--red)"></div><div class="card-icon">⚖️</div><h3>R:R</h3><p data-i18n="field_rr_p">El ratio Riesgo:Beneficio y el % de cuenta arriesgado se calculan automáticamente.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ══ ESTADÍSTICAS ════════════════════════════════ -->
+<section id="s-stats" class="section">
+  <div class="sect-label" data-i18n="stats_label">Análisis</div>
+  <h2 data-i18n="stats_h2">Estadísticas<br>avanzadas</h2>
+  <p data-i18n="stats_p">10 métricas calculadas en tiempo real. Filtra por fecha o consulta todo el historial.</p>
+
+  <div class="kpi-grid reveal">
+    <div class="kpi"><div class="kpi-v blu">75.0%</div><div class="kpi-l">Win Rate</div></div>
+    <div class="kpi"><div class="kpi-v blu">4.67</div><div class="kpi-l">Profit Factor</div></div>
+    <div class="kpi"><div class="kpi-v pos">+$11,400</div><div class="kpi-l" data-i18n="k_pl">P&L Total</div></div>
+    <div class="kpi"><div class="kpi-v blu">28</div><div class="kpi-l" data-i18n="k_trades">Total Trades</div></div>
+    <div class="kpi"><div class="kpi-v pos">+$14,200</div><div class="kpi-l" data-i18n="k_gross_win">Ben. bruto</div></div>
+    <div class="kpi"><div class="kpi-v neg">-$2,800</div><div class="kpi-l" data-i18n="k_gross_loss">Pérd. bruta</div></div>
+    <div class="kpi"><div class="kpi-v pos">+$507</div><div class="kpi-l" data-i18n="k_avg_win">Media gan.</div></div>
+    <div class="kpi"><div class="kpi-v neg">-$700</div><div class="kpi-l" data-i18n="k_avg_loss">Media pérd.</div></div>
+    <div class="kpi"><div class="kpi-v gld">+12R</div><div class="kpi-l">R Total</div></div>
+    <div class="kpi"><div class="kpi-v pos">+$320</div><div class="kpi-l" data-i18n="k_exp">Expectativa</div></div>
+  </div>
+
+  <div class="callout info reveal">
+    <span class="callout-icon">📐</span>
+    <div class="callout-text">
+      <strong data-i18n="exp_title">¿Qué es la Expectativa?</strong>
+      <span data-i18n="exp_desc">Ganancia media esperada por cada trade: <span style="font-family:var(--mono);color:var(--acc2)">(WinRate × Gan.Media) + (LossRate × Pérd.Media)</span>. Si es positiva, tu sistema es rentable.</span>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ══ CALCULADORA ════════════════════════════════ -->
+<section id="s-calc" class="section">
+  <div class="sect-label" data-i18n="calc_label">Gestión del riesgo</div>
+  <h2 data-i18n="calc_h2">Calculadora<br>en tiempo real</h2>
+  <p data-i18n="calc_p">Precios en directo para Forex, Oro, Índices y Crypto. Calcula tu posición antes de entrar.</p>
+
+  <div class="feat-row reveal">
+    <div class="feat-txt reveal-l">
+      <h3 data-i18n="calc_how_h">Cómo usarla</h3>
+      <p data-i18n="calc_how_p">Selecciona el activo, introduce capital, % de riesgo y pips de stop loss. La app calcula el tamaño en lotes, el riesgo en divisa y el beneficio potencial al TP automáticamente.</p>
+      <div class="tags">
+        <span class="tag blue">Forex Majors</span>
+        <span class="tag blue">EUR/GBP Crosses</span>
+        <span class="tag green">XAUUSD</span>
+        <span class="tag green">BTCUSD</span>
+        <span class="tag gold">NASDAQ</span>
+        <span class="tag gold">US500</span>
+      </div>
+      <div class="callout warn" style="margin-top:16px">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-text"><strong data-i18n="calc_warn_h">Precios en vivo</strong><span data-i18n="calc_warn_p"> Requieren conexión a internet. Sin conexión introduce el precio manualmente. Actualización cada 5 segundos.</span></div>
+      </div>
+    </div>
+    <div class="feat-vis reveal-r">
+      <div class="calc-demo" style="animation:float 4s ease-in-out infinite">
+        <div style="font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px" data-i18n="calc_example">Ejemplo — XAUUSD</div>
+        <div class="calc-row"><span class="calc-lbl" data-i18n="calc_capital">Capital</span><span class="calc-v">$10,000</span></div>
+        <div class="calc-row"><span class="calc-lbl" data-i18n="calc_risk">Riesgo %</span><span class="calc-v blu">1 %</span></div>
+        <div class="calc-row"><span class="calc-lbl">Stop Loss</span><span class="calc-v">15 pips</span></div>
+        <div class="calc-row"><span class="calc-lbl">Take Profit</span><span class="calc-v">45 pips</span></div>
+        <div class="calc-row"><span class="calc-lbl" data-i18n="calc_price">Precio vivo</span><span class="calc-v pos">3,284.50 ▲</span></div>
+        <div class="calc-result">
+          <div class="calc-big">0.80 lotes</div>
+          <div class="calc-sub" data-i18n="calc_sub">Riesgo: -$100 · TP: +$300 · RR 3:1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ══ DRAWDOWN ════════════════════════════════════ -->
+<section id="s-dd" class="section">
+  <div class="sect-label" data-i18n="dd_label">Control de riesgo</div>
+  <h2 data-i18n="dd_h2">Monitor de<br>Drawdown</h2>
+  <p data-i18n="dd_p">Mantente dentro de los límites de tu prop firm. Configura tu límite máximo y recibe alertas antes de superarlo.</p>
+
+  <div class="feat-row reveal">
+    <div class="feat-txt reveal-l">
+      <h3 data-i18n="dd_how_h">Cómo configurarlo</h3>
+      <div class="step-flow">
+        <div class="step" style="padding:10px 0">
+          <div class="step-n" style="width:30px;height:30px;font-size:13px">1</div>
+          <div class="step-body"><p data-i18n="dd_step1">Ve a <strong>DD</strong> → pulsa ⚙️</p></div>
+        </div>
+        <div class="step" style="padding:10px 0">
+          <div class="step-n" style="width:30px;height:30px;font-size:13px">2</div>
+          <div class="step-body"><p data-i18n="dd_step2">Introduce tu <strong>capital inicial</strong> (ej: $10,000)</p></div>
+        </div>
+        <div class="step" style="padding:10px 0;border-bottom:none">
+          <div class="step-n" style="width:30px;height:30px;font-size:13px">3</div>
+          <div class="step-body"><p data-i18n="dd_step3">Define el <strong>% máximo permitido</strong> (ej: 10% = -$1,000)</p></div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:14px">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--grn)"></div>✅ <span data-i18n="dd_safe">Safe</span></div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--gld)"></div>⚠️ <span data-i18n="dd_warn">Atención</span></div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--red)"></div>🚨 <span data-i18n="dd_danger">Peligro</span></div>
+      </div>
+    </div>
+    <div class="feat-vis reveal-r">
+      <div class="dd-card" style="animation:float 4s ease-in-out infinite">
+        <div style="font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px" data-i18n="dd_current">Drawdown Actual</div>
+        <svg viewBox="0 0 200 115" xmlns="http://www.w3.org/2000/svg" style="width:200px">
+          <defs>
+            <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#22c55e"/>
+              <stop offset="55%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#ef4444"/>
+            </linearGradient>
+          </defs>
+          <path d="M 18 100 A 82 82 0 0 1 182 100" fill="none" stroke="#1a2840" stroke-width="18" stroke-linecap="round"/>
+          <path d="M 18 100 A 82 82 0 0 1 182 100" fill="none" stroke="url(#g1)" stroke-width="18" stroke-linecap="round" opacity=".35"/>
+          <!-- Needle 43% -->
+          <path d="M 18 100 A 82 82 0 0 1 79 25" fill="none" stroke="url(#g1)" stroke-width="18" stroke-linecap="round"/>
+          <line x1="100" y1="100" x2="46" y2="52" stroke="white" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="100" cy="100" r="11" fill="#0d1520" stroke="#60a5fa" stroke-width="2"/>
+          <circle cx="100" cy="100" r="5" fill="white"/>
+          <text x="100" y="82" text-anchor="middle" fill="white" font-size="20" font-weight="bold" font-family="JetBrains Mono">43%</text>
+          <text x="100" y="96" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Outfit">DRAWDOWN</text>
+          <text x="20" y="115" fill="#94a3b8" font-size="9" font-family="Outfit">0%</text>
+          <text x="165" y="115" fill="#94a3b8" font-size="9" font-family="Outfit">100%</text>
+        </svg>
+        <div style="font-size:16px;font-weight:700;color:var(--grn);margin-top:8px">✅ SAFE</div>
+        <div class="dd-row">
+          <div class="dd-stat"><div class="dd-stat-v pos">$12,400</div><div class="dd-stat-l" data-i18n="dd_hwm">High WM</div></div>
+          <div class="dd-stat"><div class="dd-stat-v neg">-$832</div><div class="dd-stat-l" data-i18n="dd_used">Utilizado</div></div>
+          <div class="dd-stat"><div class="dd-stat-v pos">$1,168</div><div class="dd-stat-l" data-i18n="dd_margin">Margen</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ══ CONSISTENCIA ════════════════════════════════ -->
+<section id="s-cons" class="section">
+  <div class="sect-label">Prop Firm</div>
+  <h2 data-i18n="cons_h2">Regla de<br>Consistencia</h2>
+  <p data-i18n="cons_p">Verifica si cumples la Consistency Rule de FTMO, MyForexFunds y otras prop firms antes de solicitar el retiro.</p>
+
+  <div class="callout info reveal">
+    <span class="callout-icon">📖</span>
+    <div class="callout-text">
+      <strong data-i18n="cons_what_h">¿Qué es?</strong>
+      <span data-i18n="cons_what_p">La prop firm exige que tu mejor día no represente más de un X% del beneficio total. Si un día concentra demasiadas ganancias, debes seguir operando hasta equilibrar.</span>
+    </div>
+  </div>
+
+  <div class="formula reveal">
+    <span class="f-cmt">// <span data-i18n="cons_formula_title">Fórmula del Umbral de Retiro</span></span><br>
+    <span class="f-var" data-i18n="cons_threshold">Umbral</span> <span class="f-op">= </span><span class="f-var" data-i18n="cons_bestday">Mejor día</span> <span class="f-op">÷ (% ÷ 100)</span><br><br>
+    <span class="f-cmt">// <span data-i18n="cons_example">Ejemplo</span></span><br>
+    <span class="f-var" data-i18n="cons_bestday">Mejor día</span> <span class="f-op">= </span><span class="f-res">1.000 €</span><br>
+    <span class="f-var">%</span> <span class="f-op">= </span><span class="f-res">20%</span><br>
+    <span class="f-var" data-i18n="cons_threshold">Umbral</span> <span class="f-op">= 1.000 ÷ 0.20 = </span><span class="f-res">5.000 €</span><br><br>
+    <span class="f-cmt">→ <span data-i18n="cons_need">Necesitas al menos 5.000 € de beneficio total para ser elegible</span></span>
+  </div>
+
+  <div class="feat-row reveal">
+    <div class="feat-txt reveal-l">
+      <h3 data-i18n="cons_how_h">Cómo usarlo</h3>
+      <div class="step-flow">
+        <div class="step" style="padding:10px 0">
+          <div class="step-n" style="width:30px;height:30px;font-size:13px">1</div>
+          <div class="step-body"><p data-i18n="cons_step1">Ve a la sección <strong>%</strong> en la barra de navegación</p></div>
+        </div>
+        <div class="step" style="padding:10px 0">
+          <div class="step-n" style="width:30px;height:30px;font-size:13px">2</div>
+          <div class="step-body"><p data-i18n="cons_step2">Introduce tu <strong>mejor día</strong> y el <strong>% exigido</strong> por tu prop firm</p></div>
+        </div>
+        <div class="step" style="padding:10px 0;border-bottom:none">
+          <div class="step-n" style="width:30px;height:30px;font-size:13px">3</div>
+          <div class="step-body"><p data-i18n="cons_step3">La app calcula si eres <strong>elegible para el retiro</strong> y cuánto te falta</p></div>
+        </div>
+      </div>
+      <div class="callout tip" style="margin-top:16px">
+        <span class="callout-icon">🔄</span>
+        <div class="callout-text"><strong data-i18n="cons_reset_h">Botón Reiniciar</strong><span data-i18n="cons_reset_p"> Tras un retiro, pulsa Reiniciar para que el contador empiece desde hoy con trades nuevos.</span></div>
+      </div>
+    </div>
+    <div class="feat-vis reveal-r">
+      <div class="cons-card" style="animation:float 4s ease-in-out infinite">
+        <div style="font-size:9px;color:rgba(96,165,250,.55);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px">Consistency Rule</div>
+        <div style="font-size:14px;font-weight:800;margin-bottom:14px" data-i18n="cons_title_card">REGLA DE CONSISTENCIA</div>
+        <div class="cons-grid">
+          <div class="cons-cell"><div class="cons-lbl" data-i18n="cons_bestday">MEJOR DÍA</div><div class="cons-val blu">1.000 €</div></div>
+          <div class="cons-cell"><div class="cons-lbl" data-i18n="cons_pct_req">% EXIGIDO</div><div class="cons-val">20 %</div></div>
+          <div class="cons-cell" style="border-color:rgba(34,197,94,.25)"><div class="cons-lbl" data-i18n="cons_profit">BENEFICIO</div><div class="cons-val pos">2.800 €</div></div>
+          <div class="cons-cell"><div class="cons-lbl" data-i18n="cons_threshold">UMBRAL</div><div class="cons-val">5.000 €</div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:6px">
+          <span data-i18n="cons_remaining">Objetivo restante: 2.200 €</span><span style="font-family:var(--mono);font-weight:700">56%</span>
+        </div>
+        <div class="cons-bar-bg"><div class="cons-bar-fg" style="width:56%"></div></div>
+        <div class="cons-status no" data-i18n="cons_not_eligible">⚠️ NO ELEGIBLE PARA RETIRO</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ══ BACKUP ══════════════════════════════════════ -->
+<section id="s-backup" class="section">
+  <div class="sect-label" data-i18n="backup_label">Exportar y compartir</div>
+  <h2 data-i18n="backup_h2">Backup, PDF<br>y compartir</h2>
+  <p data-i18n="backup_p">Exporta tu historial, genera informes PDF profesionales y compártelos por WhatsApp o Telegram.</p>
+
+  <div class="grid-2 reveal">
+    <div class="card"><div class="card-accent" style="--ca:var(--grn)"></div><div class="card-icon">💾</div><h3 data-i18n="bk_backup_h">Backup completo</h3><p data-i18n="bk_backup_p">Guarda todos tus trades en un archivo. Ajustes → Backup. Úsalo para restaurar en otro dispositivo o ante cualquier problema.</p></div>
+    <div class="card"><div class="card-accent" style="--ca:var(--acc2)"></div><div class="card-icon">📄</div><h3 data-i18n="bk_pdf_h">Informe PDF</h3><p data-i18n="bk_pdf_p">Genera un informe profesional con estadísticas, trades y gráfico de balance. Ideal para tu prop firm.</p></div>
+    <div class="card"><div class="card-accent" style="--ca:#25D366"></div><div class="card-icon">💬</div><h3 data-i18n="bk_share_h">Compartir</h3><p data-i18n="bk_share_p">Envía el backup o informe directamente por WhatsApp, Telegram o email desde dentro de la app.</p></div>
+    <div class="card"><div class="card-accent" style="--ca:var(--gld)"></div><div class="card-icon">🔄</div><h3 data-i18n="bk_restore_h">Restaurar backup</h3><p data-i18n="bk_restore_p">Importa un backup anterior para recuperar todos tus datos. Imprescindible al cambiar de móvil.</p></div>
+  </div>
+
+  <div class="reveal" style="margin-top:28px">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px" data-i18n="pdf_flow_h">Cómo exportar un informe PDF:</h3>
+    <div class="flow">
+      <div class="flow-box" data-i18n="flow_reports">📋 Informes</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box" data-i18n="flow_type">Elige tipo</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box" data-i18n="flow_period">Periodo</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box" data-i18n="flow_preview">Vista previa</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box hl" data-i18n="flow_export">📤 Exportar</div>
+    </div>
+    <div class="callout tip" style="margin-top:16px">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text"><strong data-i18n="tip_backup_h">Recomendación</strong><span data-i18n="tip_backup_p"> Haz un backup semanal. Envíatelo por email o guárdalo en Google Drive para no perder nunca tus datos.</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ══ PERSONALIZACIÓN ════════════════════════════ -->
+<section class="section">
+  <div class="sect-label" data-i18n="pref_label">Personalización</div>
+  <h2 data-i18n="pref_h2">La app,<br>a tu manera</h2>
+  <p data-i18n="pref_p">Idioma, tema visual, fuente tipográfica y más opciones para que la app sea exactamente como tú quieres.</p>
+
+  <div class="grid-3 reveal">
+    <div class="card"><div class="card-accent" style="--ca:var(--acc2)"></div><div class="card-icon">🌐</div><h3 data-i18n="pref_lang_h">3 idiomas</h3><p data-i18n="pref_lang_p">Español, Français, English. Cambia desde Ajustes → Idioma. Toda la app se traduce al instante.</p></div>
+    <div class="card"><div class="card-accent" style="--ca:var(--gld)"></div><div class="card-icon">🎨</div><h3 data-i18n="pref_theme_h">6 temas</h3><p data-i18n="pref_theme_p">Oscuro, Claro, Midnight, Forest, Amber, Charcoal. Ajustes → Apariencia → Tema.</p></div>
+    <div class="card"><div class="card-accent" style="--ca:var(--pur)"></div><div class="card-icon">🔤</div><h3 data-i18n="pref_font_h">5 fuentes</h3><p data-i18n="pref_font_p">Inter, Syne, Rajdhani, DM Sans, JetBrains Mono. Elige tu tipografía favorita.</p></div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ══ PLANES ════════════════════════════════════ -->
+<section class="section">
+  <div class="sect-label" data-i18n="plans_label">Suscripción</div>
+  <h2 data-i18n="plans_h2">7 días gratis,<br>sin límites</h2>
+  <p data-i18n="plans_p">Todas las funciones profesionales durante 7 días. Sin tarjeta de crédito al activar el período de prueba.</p>
+
+  <div class="plan-grid reveal">
+    <div class="plan"><div class="plan-icon">📅</div><div class="plan-name" data-i18n="plan1_name">Mensual</div><div class="plan-price blu">6,99 €</div><div class="plan-per" data-i18n="plan1_per">/mes</div><div class="plan-desc" data-i18n="plan1_desc">Acceso completo. Cancela cuando quieras.</div></div>
+    <div class="plan best"><div class="plan-icon" style="margin-top:28px">⭐</div><div class="plan-name" data-i18n="plan2_name">Anual</div><div class="plan-price gld">62,90 €</div><div class="plan-per" data-i18n="plan2_per">/año · 5,24 €/mes</div><div class="plan-desc" data-i18n="plan2_desc">Acceso completo. Compromiso 12 meses.</div></div>
+    <div class="plan"><div class="plan-icon">👑</div><div class="plan-name" data-i18n="plan3_name">De por vida</div><div class="plan-price gld">149 €</div><div class="plan-per" data-i18n="plan3_per">pago único</div><div class="plan-desc" data-i18n="plan3_desc">Acceso permanente para siempre. Sin pagos futuros.</div></div>
+  </div>
+
+  <div class="callout info reveal">
+    <span class="callout-icon">🔄</span>
+    <div class="callout-text"><strong data-i18n="restore_h">¿Cambiaste de móvil?</strong><span data-i18n="restore_p"> Pulsa <strong>Restaurar compra</strong> en la pantalla de planes para recuperar tu acceso sin pagar de nuevo.</span></div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══════════════════════════════════════ -->
+<footer>
+  <div style="font-size:32px;margin-bottom:14px">📊</div>
+  <div style="font-size:20px;font-weight:900;color:var(--txt);margin-bottom:6px">Trading Journal <span style="color:var(--acc2)">GlobalCode 2.0</span></div>
+  <div style="margin-bottom:18px;color:var(--txt2)" data-i18n="footer_tagline">El diario profesional para traders serios</div>
+  <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;font-size:12px">
+    <span>🌐 ES / FR / EN</span>
+    <span>📱 Android</span>
+    <span>🔒 <span data-i18n="footer_noads">Sin anuncios</span></span>
+    <span>☁️ <span data-i18n="footer_offline">100% offline</span></span>
+  </div>
+</footer>
+
+<!-- ══ TRANSLATIONS ═══════════════════════════════ -->
+<script>
+const T = {
+  es:{
+    hero_badge:"📖 GUÍA DE USUARIO",hero_sub:"Tu diario profesional para Forex, Crypto y Prop Firm. Todo lo que necesitas para operar mejor.",
+    nav_start:"🚀 Primeros pasos",nav_cal:"📅 Calendario",nav_calc:"🧮 Calculadora",nav_dd:"📉 Drawdown",nav_cons:"⚖️ Consistencia",nav_backup:"📤 Backup & Export →",
+    scroll_hint:"scroll",
+    start_label:"Primeros pasos",start_h2:"Listo en<br>3 pasos",start_p:"Antes de registrar tu primer trade, configura tu cuenta y personaliza la app a tu gusto.",
+    step1_h:"Crea tu cuenta de trading",step1_p:"Pulsa 📅 en la barra inferior → selector de calendario → <strong>+ Nueva cuenta</strong>. Ponle un nombre descriptivo.",
+    tip_multi_title:"Múltiples cuentas",tip_multi_p:" Puedes gestionar varios retos de prop firm simultáneamente.",
+    step2_h:"Elige idioma y tema",step2_p:"Ajustes ⚙️ → Idioma → Tema visual. 3 idiomas y 6 temas disponibles.",
+    theme_dark:"Oscuro",theme_light:"Claro",
+    step3_h:"Registra tu primer trade",step3_p:"Pulsa cualquier día → formulario → rellena activo, dirección, resultado y P&L → <strong>Guardar</strong>.",
+    cal_label:"Función principal",cal_h2:"Calendario<br>de trades",cal_p:"Visualiza todo tu mes de un vistazo. Cada día muestra el resultado con código de colores instantáneo.",
+    cal_colors_h:"Código de colores",cal_colors_p:"El calendario usa colores para identificar de un vistazo cómo fue cada jornada.",
+    col_win:"Día ganador (TP)",col_loss:"Día perdedor (SL)",col_manual:"Manual",col_today:"Hoy",
+    tip_swipe_h:"Desliza para navegar",tip_swipe_p:" Desliza el dedo horizontalmente para cambiar de sección sin usar la barra inferior.",
+    add_trade_h:"Cómo añadir un trade",flow_tap:"👆 Pulsa un día",flow_form:"Formulario",flow_fill:"Rellena datos",flow_save:"✅ Guardar",
+    field_asset:"Activo",field_asset_p:"EURUSD, XAUUSD, BTCUSD… Elige del catálogo o escribe el símbolo.",
+    field_result:"Resultado",field_result_p:"TP, SL, Manual, Breakeven, Parcial. Cada resultado con su color propio.",
+    field_notes:"Notas e imágenes",field_notes_p:"Adjunta capturas del gráfico y análisis para revisar tus trades después.",
+    field_rr_p:"El ratio R:R y el % de cuenta arriesgado se calculan automáticamente.",
+    stats_label:"Análisis",stats_h2:"Estadísticas<br>avanzadas",stats_p:"10 métricas calculadas en tiempo real. Filtra por fecha o consulta todo el historial.",
+    k_pl:"P&L Total",k_trades:"Total Trades",k_gross_win:"Ben. bruto",k_gross_loss:"Pérd. bruta",k_avg_win:"Media gan.",k_avg_loss:"Media pérd.",k_exp:"Expectativa",
+    exp_title:"¿Qué es la Expectativa?",exp_desc:'Ganancia media esperada por trade: <span style="font-family:var(--mono);color:var(--acc2)">(WinRate × Gan.Media) + (LossRate × Pérd.Media)</span>. Si es positiva, tu sistema es rentable.',
+    calc_label:"Gestión del riesgo",calc_h2:"Calculadora<br>en tiempo real",calc_p:"Precios en directo para Forex, Oro, Índices y Crypto. Calcula tu posición antes de entrar.",
+    calc_how_h:"Cómo usarla",calc_how_p:"Selecciona el activo, introduce capital, % de riesgo y pips de stop loss. La app calcula el tamaño en lotes automáticamente.",
+    calc_warn_h:"Precios en vivo",calc_warn_p:" Requieren conexión a internet. Sin conexión introduce el precio manualmente. Actualización cada 5 segundos.",
+    calc_example:"Ejemplo — XAUUSD",calc_capital:"Capital",calc_risk:"Riesgo %",calc_price:"Precio vivo",calc_sub:"Riesgo: -$100 · TP: +$300 · RR 3:1",
+    dd_label:"Control de riesgo",dd_h2:"Monitor de<br>Drawdown",dd_p:"Mantente dentro de los límites de tu prop firm. Configura tu límite máximo y recibe alertas antes de superarlo.",
+    dd_how_h:"Cómo configurarlo",dd_step1:"Ve a <strong>DD</strong> → pulsa ⚙️",dd_step2:"Introduce tu <strong>capital inicial</strong> (ej: $10,000)",dd_step3:"Define el <strong>% máximo permitido</strong> (ej: 10%)",
+    dd_safe:"Safe",dd_warn:"Atención",dd_danger:"Peligro",dd_current:"Drawdown Actual",dd_hwm:"High WM",dd_used:"Utilizado",dd_margin:"Margen",
+    cons_h2:"Regla de<br>Consistencia",cons_p:"Verifica si cumples la Consistency Rule de FTMO, MyForexFunds y otras prop firms antes del retiro.",
+    cons_what_h:"¿Qué es?",cons_what_p:"La prop firm exige que tu mejor día no represente más de un X% del beneficio total.",
+    cons_formula_title:"Fórmula del Umbral de Retiro",cons_threshold:"Umbral",cons_bestday:"Mejor día",cons_example:"Ejemplo",cons_need:"Necesitas al menos 5.000 € de beneficio total para ser elegible",
+    cons_how_h:"Cómo usarlo",cons_step1:"Ve a la sección <strong>%</strong> en la barra de navegación",cons_step2:"Introduce tu <strong>mejor día</strong> y el <strong>% exigido</strong>",cons_step3:"La app calcula si eres <strong>elegible</strong> y cuánto te falta",
+    cons_reset_h:"Botón Reiniciar",cons_reset_p:" Tras un retiro, pulsa Reiniciar para que el contador empiece desde hoy.",
+    cons_title_card:"REGLA DE CONSISTENCIA",cons_pct_req:"% EXIGIDO",cons_profit:"BENEFICIO",cons_remaining:"Objetivo restante: 2.200 €",cons_not_eligible:"⚠️ NO ELEGIBLE PARA RETIRO",
+    backup_label:"Exportar y compartir",backup_h2:"Backup, PDF<br>y compartir",backup_p:"Exporta tu historial, genera informes PDF profesionales y compártelos por WhatsApp o Telegram.",
+    bk_backup_h:"Backup completo",bk_backup_p:"Guarda todos tus trades. Ajustes → Backup. Restaura en otro dispositivo fácilmente.",
+    bk_pdf_h:"Informe PDF",bk_pdf_p:"Informe profesional con estadísticas, trades y gráfico. Ideal para tu prop firm.",
+    bk_share_h:"Compartir",bk_share_p:"Envía por WhatsApp, Telegram o email desde dentro de la app sin salir.",
+    bk_restore_h:"Restaurar backup",bk_restore_p:"Importa un backup anterior. Imprescindible al cambiar de móvil.",
+    pdf_flow_h:"Cómo exportar un informe PDF:",flow_reports:"📋 Informes",flow_type:"Elige tipo",flow_period:"Periodo",flow_preview:"Vista previa",flow_export:"📤 Exportar",
+    tip_backup_h:"Recomendación",tip_backup_p:" Haz un backup semanal. Guárdalo en Google Drive o envíatelo por email.",
+    pref_label:"Personalización",pref_h2:"La app,<br>a tu manera",pref_p:"Idioma, tema visual, fuente tipográfica y más opciones para que la app sea exactamente como tú quieres.",
+    pref_lang_h:"3 idiomas",pref_lang_p:"Español, Français, English. Cambia desde Ajustes → Idioma. Todo se traduce al instante.",
+    pref_theme_h:"6 temas",pref_theme_p:"Oscuro, Claro, Midnight, Forest, Amber, Charcoal. Ajustes → Apariencia.",
+    pref_font_h:"5 fuentes",pref_font_p:"Inter, Syne, Rajdhani, DM Sans, JetBrains Mono. Elige tu tipografía.",
+    plans_label:"Suscripción",plans_h2:"7 días gratis,<br>sin límites",plans_p:"Todas las funciones profesionales durante 7 días. Sin tarjeta de crédito al activar.",
+    plan1_name:"Mensual",plan1_per:"/mes",plan1_desc:"Acceso completo. Cancela cuando quieras.",
+    plan2_name:"Anual",plan2_per:"/año · 5,24 €/mes",plan2_desc:"Acceso completo. Compromiso 12 meses.",
+    plan3_name:"De por vida",plan3_per:"pago único",plan3_desc:"Acceso permanente para siempre.",
+    restore_h:"¿Cambiaste de móvil?",restore_p:" Pulsa <strong>Restaurar compra</strong> en la pantalla de planes para recuperar tu acceso.",
+    footer_tagline:"El diario profesional para traders serios",footer_noads:"Sin anuncios",footer_offline:"100% offline"
+  },
+  fr:{
+    hero_badge:"📖 GUIDE UTILISATEUR",hero_sub:"Votre journal de trading professionnel pour Forex, Crypto et Prop Firm. Tout ce qu'il vous faut pour mieux trader.",
+    nav_start:"🚀 Démarrage",nav_cal:"📅 Calendrier",nav_calc:"🧮 Calculatrice",nav_dd:"📉 Drawdown",nav_cons:"⚖️ Consistance",nav_backup:"📤 Backup & Export →",
+    scroll_hint:"défiler",
+    start_label:"Démarrage",start_h2:"Prêt en<br>3 étapes",start_p:"Avant d'enregistrer votre premier trade, configurez votre compte et personnalisez l'app.",
+    step1_h:"Créez votre compte de trading",step1_p:"Appuyez sur 📅 → sélecteur de calendrier → <strong>+ Nouveau compte</strong>. Donnez-lui un nom descriptif.",
+    tip_multi_title:"Comptes multiples",tip_multi_p:" Gérez plusieurs challenges prop firm simultanément.",
+    step2_h:"Choisissez langue et thème",step2_p:"Paramètres ⚙️ → Langue → Thème visuel. 3 langues et 6 thèmes disponibles.",
+    theme_dark:"Sombre",theme_light:"Clair",
+    step3_h:"Enregistrez votre premier trade",step3_p:"Appuyez sur n'importe quel jour → formulaire → renseignez actif, direction, résultat et P&L → <strong>Enregistrer</strong>.",
+    cal_label:"Fonction principale",cal_h2:"Calendrier<br>de trades",cal_p:"Visualisez tout votre mois d'un coup d'œil. Chaque jour affiche le résultat avec un code couleur instantané.",
+    cal_colors_h:"Code couleur",cal_colors_p:"Le calendrier utilise des couleurs pour identifier en un coup d'œil chaque journée de trading.",
+    col_win:"Jour gagnant (TP)",col_loss:"Jour perdant (SL)",col_manual:"Manuel",col_today:"Aujourd'hui",
+    tip_swipe_h:"Glissez pour naviguer",tip_swipe_p:" Glissez horizontalement pour changer de section sans utiliser la barre inférieure.",
+    add_trade_h:"Comment ajouter un trade",flow_tap:"👆 Appuyez un jour",flow_form:"Formulaire",flow_fill:"Renseignez",flow_save:"✅ Enregistrer",
+    field_asset:"Actif",field_asset_p:"EURUSD, XAUUSD, BTCUSD… Choisissez dans le catalogue ou tapez le symbole.",
+    field_result:"Résultat",field_result_p:"TP, SL, Manuel, Breakeven, Partiel. Chaque résultat a sa propre couleur.",
+    field_notes:"Notes et images",field_notes_p:"Joignez des captures d'écran et vos analyses pour revoir vos trades ultérieurement.",
+    field_rr_p:"Le ratio R:R et le % de compte risqué sont calculés automatiquement.",
+    stats_label:"Analyse",stats_h2:"Statistiques<br>avancées",stats_p:"10 métriques calculées en temps réel. Filtrez par date ou consultez tout l'historique.",
+    k_pl:"P&L Total",k_trades:"Total Trades",k_gross_win:"Gain brut",k_gross_loss:"Perte brute",k_avg_win:"Moy. gain",k_avg_loss:"Moy. perte",k_exp:"Espérance",
+    exp_title:"Qu'est-ce que l'Espérance ?",exp_desc:'Gain moyen attendu par trade : <span style="font-family:var(--mono);color:var(--acc2)">(TxVictoire × GainMoy) + (TxPerte × PerteMoy)</span>. Si positive, votre système est rentable.',
+    calc_label:"Gestion du risque",calc_h2:"Calculatrice<br>en temps réel",calc_p:"Prix en direct pour Forex, Or, Indices et Crypto. Calculez votre position avant d'entrer en marché.",
+    calc_how_h:"Comment l'utiliser",calc_how_p:"Sélectionnez l'actif, entrez le capital, % de risque et pips de stop loss. L'app calcule la taille en lots automatiquement.",
+    calc_warn_h:"Prix en direct",calc_warn_p:" Nécessitent une connexion internet. Sans connexion, entrez le prix manuellement. Mise à jour toutes les 5 secondes.",
+    calc_example:"Exemple — XAUUSD",calc_capital:"Capital",calc_risk:"Risque %",calc_price:"Prix en direct",calc_sub:"Risque : -$100 · TP : +$300 · RR 3:1",
+    dd_label:"Contrôle du risque",dd_h2:"Moniteur de<br>Drawdown",dd_p:"Restez dans les limites de votre prop firm. Configurez votre limite maximale et recevez des alertes.",
+    dd_how_h:"Comment le configurer",dd_step1:"Allez dans <strong>DD</strong> → appuyez ⚙️",dd_step2:"Entrez votre <strong>capital initial</strong> (ex : $10 000)",dd_step3:"Définissez le <strong>% maximum autorisé</strong> (ex : 10%)",
+    dd_safe:"Safe",dd_warn:"Attention",dd_danger:"Danger",dd_current:"Drawdown Actuel",dd_hwm:"High WM",dd_used:"Utilisé",dd_margin:"Marge",
+    cons_h2:"Règle de<br>Consistance",cons_p:"Vérifiez si vous respectez la Consistency Rule de FTMO, MyForexFunds et autres prop firms avant le retrait.",
+    cons_what_h:"Qu'est-ce que c'est ?",cons_what_p:"La prop firm exige que votre meilleure journée ne représente pas plus de X% du bénéfice total.",
+    cons_formula_title:"Formule du Seuil de Retrait",cons_threshold:"Seuil",cons_bestday:"Meilleur jour",cons_example:"Exemple",cons_need:"Vous avez besoin d'au moins 5 000 € de bénéfice total pour être éligible",
+    cons_how_h:"Comment l'utiliser",cons_step1:"Allez dans la section <strong>%</strong> de la barre de navigation",cons_step2:"Entrez votre <strong>meilleur jour</strong> et le <strong>% exigé</strong>",cons_step3:"L'app calcule si vous êtes <strong>éligible</strong> et ce qu'il manque",
+    cons_reset_h:"Bouton Réinitialiser",cons_reset_p:" Après un retrait, appuyez sur Réinitialiser pour que le compteur reparte d'aujourd'hui.",
+    cons_title_card:"RÈGLE DE RÉGULARITÉ",cons_pct_req:"% EXIGÉ",cons_profit:"BÉNÉFICE",cons_remaining:"Objectif restant : 2 200 €",cons_not_eligible:"⚠️ NON ÉLIGIBLE AU RETRAIT",
+    backup_label:"Exporter et partager",backup_h2:"Backup, PDF<br>et partage",backup_p:"Exportez votre historique, générez des rapports PDF professionnels et partagez-les via WhatsApp ou Telegram.",
+    bk_backup_h:"Sauvegarde complète",bk_backup_p:"Sauvegardez tous vos trades. Paramètres → Backup. Restaurez sur un autre appareil facilement.",
+    bk_pdf_h:"Rapport PDF",bk_pdf_p:"Rapport professionnel avec statistiques, trades et graphique. Idéal pour votre prop firm.",
+    bk_share_h:"Partager",bk_share_p:"Envoyez via WhatsApp, Telegram ou email directement depuis l'app.",
+    bk_restore_h:"Restaurer la sauvegarde",bk_restore_p:"Importez une sauvegarde précédente. Indispensable lors d'un changement de téléphone.",
+    pdf_flow_h:"Comment exporter un rapport PDF :",flow_reports:"📋 Rapports",flow_type:"Choisissez type",flow_period:"Période",flow_preview:"Aperçu",flow_export:"📤 Exporter",
+    tip_backup_h:"Recommandation",tip_backup_p:" Faites une sauvegarde hebdomadaire. Enregistrez-la dans Google Drive ou envoyez-la par e-mail.",
+    pref_label:"Personnalisation",pref_h2:"L'app,<br>comme vous voulez",pref_p:"Langue, thème visuel, police typographique et d'autres options pour adapter l'app à vos préférences.",
+    pref_lang_h:"3 langues",pref_lang_p:"Español, Français, English. Changez depuis Paramètres → Langue. Tout se traduit instantanément.",
+    pref_theme_h:"6 thèmes",pref_theme_p:"Sombre, Clair, Midnight, Forest, Amber, Charcoal. Paramètres → Apparence.",
+    pref_font_h:"5 polices",pref_font_p:"Inter, Syne, Rajdhani, DM Sans, JetBrains Mono. Choisissez votre typographie.",
+    plans_label:"Abonnement",plans_h2:"7 jours gratuits,<br>sans limites",plans_p:"Toutes les fonctionnalités professionnelles pendant 7 jours. Sans carte bancaire à l'activation.",
+    plan1_name:"Mensuel",plan1_per:"/mois",plan1_desc:"Accès complet. Annulez quand vous voulez.",
+    plan2_name:"Annuel",plan2_per:"/an · 5,24 €/mois",plan2_desc:"Accès complet. Engagement 12 mois.",
+    plan3_name:"À vie",plan3_per:"paiement unique",plan3_desc:"Accès permanent pour toujours.",
+    restore_h:"Changé de téléphone ?",restore_p:" Appuyez sur <strong>Restaurer l'achat</strong> sur l'écran des plans pour récupérer votre accès.",
+    footer_tagline:"Le journal professionnel pour traders sérieux",footer_noads:"Sans publicité",footer_offline:"100% hors ligne"
+  },
+  en:{
+    hero_badge:"📖 USER GUIDE",hero_sub:"Your professional trading journal for Forex, Crypto & Prop Firm. Everything you need to trade better.",
+    nav_start:"🚀 Getting started",nav_cal:"📅 Calendar",nav_calc:"🧮 Calculator",nav_dd:"📉 Drawdown",nav_cons:"⚖️ Consistency",nav_backup:"📤 Backup & Export →",
+    scroll_hint:"scroll",
+    start_label:"Getting started",start_h2:"Ready in<br>3 steps",start_p:"Before logging your first trade, set up your account and customize the app to your liking.",
+    step1_h:"Create your trading account",step1_p:"Tap 📅 in the bottom bar → calendar selector → <strong>+ New account</strong>. Give it a descriptive name.",
+    tip_multi_title:"Multiple accounts",tip_multi_p:" Manage several prop firm challenges simultaneously, each with its own history.",
+    step2_h:"Choose language & theme",step2_p:"Settings ⚙️ → Language → Visual theme. 3 languages and 6 themes available.",
+    theme_dark:"Dark",theme_light:"Light",
+    step3_h:"Log your first trade",step3_p:"Tap any day → form → fill in asset, direction, result and P&L → <strong>Save</strong>. The day gets color-coded.",
+    cal_label:"Main feature",cal_h2:"Trade<br>Calendar",cal_p:"See your entire month at a glance. Each day shows the result with instant color coding.",
+    cal_colors_h:"Color coding",cal_colors_p:"The calendar uses colors so you can identify each trading day at a glance.",
+    col_win:"Winning day (TP)",col_loss:"Losing day (SL)",col_manual:"Manual",col_today:"Today",
+    tip_swipe_h:"Swipe to navigate",tip_swipe_p:" Swipe horizontally to switch sections without using the bottom bar.",
+    add_trade_h:"How to add a trade",flow_tap:"👆 Tap a day",flow_form:"Form opens",flow_fill:"Fill in data",flow_save:"✅ Save",
+    field_asset:"Asset",field_asset_p:"EURUSD, XAUUSD, BTCUSD… Pick from the catalog or type the symbol. Favorites appear first.",
+    field_result:"Result",field_result_p:"TP, SL, Manual, Breakeven, Partial, TP1, TP2. Each result has its own color.",
+    field_notes:"Notes & images",field_notes_p:"Attach chart screenshots and analysis to review your trades later.",
+    field_rr_p:"The R:R ratio and account risk % are calculated automatically.",
+    stats_label:"Analysis",stats_h2:"Advanced<br>statistics",stats_p:"10 metrics calculated in real time. Filter by date or view all-time performance.",
+    k_pl:"Total P&L",k_trades:"Total Trades",k_gross_win:"Gross win",k_gross_loss:"Gross loss",k_avg_win:"Avg win",k_avg_loss:"Avg loss",k_exp:"Expectancy",
+    exp_title:"What is Expectancy?",exp_desc:'Average expected gain per trade: <span style="font-family:var(--mono);color:var(--acc2)">(WinRate × AvgWin) + (LossRate × AvgLoss)</span>. If positive, your system is profitable long-term.',
+    calc_label:"Risk management",calc_h2:"Live risk<br>calculator",calc_p:"Real-time prices for Forex, Gold, Indices and Crypto. Calculate your position size before entering the market.",
+    calc_how_h:"How to use it",calc_how_p:"Select the asset, enter capital, risk % and stop loss pips. The app automatically calculates the lot size.",
+    calc_warn_h:"Live prices",calc_warn_p:" Require internet connection. Without connection, enter the price manually. Updated every 5 seconds.",
+    calc_example:"Example — XAUUSD",calc_capital:"Account size",calc_risk:"Risk %",calc_price:"Live price",calc_sub:"Risk: -$100 · TP: +$300 · RR 3:1",
+    dd_label:"Risk control",dd_h2:"Drawdown<br>Monitor",dd_p:"Stay within your prop firm's risk limits. Set your maximum limit and get alerts before you breach it.",
+    dd_how_h:"How to configure it",dd_step1:"Go to <strong>DD</strong> → tap ⚙️",dd_step2:"Enter your <strong>starting capital</strong> (e.g. $10,000)",dd_step3:"Set the <strong>maximum allowed %</strong> (e.g. 10%)",
+    dd_safe:"Safe",dd_warn:"Warning",dd_danger:"Danger",dd_current:"Current Drawdown",dd_hwm:"High WM",dd_used:"Used",dd_margin:"Margin",
+    cons_h2:"Consistency<br>Rule",cons_p:"Check if you meet the Consistency Rule required by FTMO, MyForexFunds and other prop firms before requesting withdrawal.",
+    cons_what_h:"What is it?",cons_what_p:"The prop firm requires that your best day does not represent more than X% of your total profit.",
+    cons_formula_title:"Withdrawal Threshold Formula",cons_threshold:"Threshold",cons_bestday:"Best day",cons_example:"Example",cons_need:"You need at least €5,000 total profit to be eligible",
+    cons_how_h:"How to use it",cons_step1:"Go to the <strong>%</strong> section in the navigation bar",cons_step2:"Enter your <strong>best day</strong> and the <strong>required %</strong>",cons_step3:"The app calculates whether you're <strong>eligible</strong> and how much is left",
+    cons_reset_h:"Reset button",cons_reset_p:" After a withdrawal, tap Reset so the counter starts from today with new trades only.",
+    cons_title_card:"CONSISTENCY RULE",cons_pct_req:"% REQUIRED",cons_profit:"PROFIT",cons_remaining:"Remaining goal: €2,200",cons_not_eligible:"⚠️ NOT ELIGIBLE FOR WITHDRAWAL",
+    backup_label:"Export & share",backup_h2:"Backup, PDF<br>& sharing",backup_p:"Export your history, generate professional PDF reports and share them via WhatsApp or Telegram.",
+    bk_backup_h:"Full backup",bk_backup_p:"Save all your trades. Settings → Backup. Restore on another device easily.",
+    bk_pdf_h:"PDF report",bk_pdf_p:"Professional report with statistics, trades and balance chart. Perfect for your prop firm.",
+    bk_share_h:"Share",bk_share_p:"Send via WhatsApp, Telegram or email directly from within the app.",
+    bk_restore_h:"Restore backup",bk_restore_p:"Import a previous backup. Essential when switching phones.",
+    pdf_flow_h:"How to export a PDF report:",flow_reports:"📋 Reports",flow_type:"Choose type",flow_period:"Period",flow_preview:"Preview",flow_export:"📤 Export",
+    tip_backup_h:"Recommendation",tip_backup_p:" Make a weekly backup. Save it to Google Drive or email it to yourself.",
+    pref_label:"Customization",pref_h2:"The app,<br>your way",pref_p:"Language, visual theme, font and more options so the app is exactly how you want it.",
+    pref_lang_h:"3 languages",pref_lang_p:"Spanish, French, English. Change in Settings → Language. Everything translates instantly.",
+    pref_theme_h:"6 themes",pref_theme_p:"Dark, Light, Midnight, Forest, Amber, Charcoal. Settings → Appearance.",
+    pref_font_h:"5 fonts",pref_font_p:"Inter, Syne, Rajdhani, DM Sans, JetBrains Mono. Choose your typography.",
+    plans_label:"Subscription",plans_h2:"7 days free,<br>no limits",plans_p:"All professional features for 7 days. No credit card required to start the trial.",
+    plan1_name:"Monthly",plan1_per:"/month",plan1_desc:"Full access. Cancel anytime.",
+    plan2_name:"Annual",plan2_per:"/year · €5.24/month",plan2_desc:"Full access. 12-month commitment.",
+    plan3_name:"Lifetime",plan3_per:"one-time",plan3_desc:"Permanent access forever. No future payments.",
+    restore_h:"Changed your phone?",restore_p:" Tap <strong>Restore purchase</strong> on the plans screen to recover your access without paying again.",
+    footer_tagline:"The professional journal for serious traders",footer_noads:"No ads",footer_offline:"100% offline"
+  }
+};
+
+let lang = 'es';
+function setLang(l) {
+  lang = l;
+  ['es','fr','en'].forEach(x => {
+    document.getElementById('btn-'+x).classList.toggle('active', x===l);
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (T[l][key] !== undefined) el.innerHTML = T[l][key];
+  });
+  document.documentElement.lang = l;
+}
+
+// Cursor glow
+const cg = document.getElementById('cglow');
+document.addEventListener('mousemove', e => {
+  cg.style.left = e.clientX + 'px';
+  cg.style.top = e.clientY + 'px';
+});
+
+// Particles
+const pc = document.getElementById('particles');
+for(let i=0;i<18;i++){
+  const p=document.createElement('div');
+  p.className='particle';
+  const size=Math.random()*4+2;
+  const colors=['rgba(37,99,235','rgba(96,165,250','rgba(168,85,247','rgba(34,197,94'];
+  const c=colors[Math.floor(Math.random()*colors.length)];
+  Object.assign(p.style,{
+    width:size+'px',height:size+'px',
+    left:Math.random()*100+'%',top:Math.random()*100+'%',
+    background:c+',.7)',
+    '--d':(8+Math.random()*12)+'s',
+    '--op':(.05+Math.random()*.15),
+    '--x1':(-30+Math.random()*60)+'px','--y1':(-30+Math.random()*60)+'px',
+    '--x2':(-30+Math.random()*60)+'px','--y2':(-30+Math.random()*60)+'px',
+    '--x3':(-30+Math.random()*60)+'px','--y3':(-30+Math.random()*60)+'px',
+    animationDelay:Math.random()*8+'s'
+  });
+  pc.appendChild(p);
+}
+
+// Scroll reveal
+const revEls = document.querySelectorAll('.reveal,.reveal-l,.reveal-r');
+const revObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.08});
+revEls.forEach(r=>revObs.observe(r));
+
+// TOC
+const sections=['s-hero','s-start','s-cal','s-stats','s-calc','s-dd','s-cons','s-backup'];
+const dots=document.querySelectorAll('.toc-d');
+function updateToc(){
+  let a=0;
+  sections.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el && el.getBoundingClientRect().top<=window.innerHeight/2) a=i;
+  });
+  dots.forEach((d,i)=>d.classList.toggle('active',i===a));
+}
+window.addEventListener('scroll',updateToc,{passive:true});
+
+// Float animation
+const style=document.createElement('style');
+style.textContent='@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}';
+document.head.appendChild(style);
+</script>
+</body>
+</html>
