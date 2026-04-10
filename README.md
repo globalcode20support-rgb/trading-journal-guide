@@ -1,12 +1,28 @@
 # Guía de Usuario - Trading Journal GlobalCode 2.0
 
-📖 Documentación oficial de la aplicación.
+**📖 Documentación Oficial**
 
-### Ver la guía completa:
+Esta es la **guía completa de usuario** de Trading Journal - GlobalCode 2.0.
 
-👉 **[Abrir Guía de Usuario](TradingJournal_UserGuide.html)**
+### Acceso directo
+
+**[Abrir Guía Completa](https://globalcode20support-rgb.github.io/trading-journal-guide/)**
 
 ---
 
-**Trading Journal - GlobalCode 2.0**  
-El diario de trading profesional para Forex, Crypto y Prop Firms.
+### Contenido de la guía
+
+- Primeros pasos
+- Calendario inteligente
+- Estadísticas avanzadas
+- Monitor de Drawdown
+- Calculadora de riesgo
+- Regla de Consistencia
+- Backup y exportación
+- Preguntas frecuentes
+
+---
+
+**[← Volver a la Landing Page](https://globalcode20support-rgb.github.io/Trading-journal-landing/)**
+
+© 2026 GlobalCode 2.0
